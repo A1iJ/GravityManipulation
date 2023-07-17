@@ -23,18 +23,22 @@ public class HologramController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftArrow))
         {
+            Debug.Log(-transform.right);
             RotateHologram(Quaternion.Inverse(rotationZ));
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
+            Debug.Log(transform.right);
             RotateHologram(rotationZ);
         }
         else if (Input.GetKey(KeyCode.UpArrow))
         {
+            Debug.Log(transform.forward);
             RotateHologram(Quaternion.Inverse(rotationX));
         }
         else if (Input.GetKey(KeyCode.DownArrow))
         {
+            Debug.Log(-transform.forward);
             RotateHologram(rotationX);
         }
         else
@@ -57,7 +61,6 @@ public class HologramController : MonoBehaviour
 
         if (Quaternion.Angle(hologram.transform.rotation, targetRotation) <= 0.1f)
         {
-            Debug.Log("HologramRotation: " + hologram.transform.rotation);
             isRotating = false;
         }
     }
