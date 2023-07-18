@@ -4,47 +4,48 @@ using UnityEngine;
 
 public class AnimationStateController : MonoBehaviour
 {
-
-    public GroundCheck groundCheck;
-
+ 
     private Animator animator;
     public Animator hologramAnimator;
+    public GroundCheck groundCheck;
 
     int isRunningHash;
     int isGroundedHash;
+
+    private InputManager inputManager;
+
     void Start()
     {
         animator = GetComponent<Animator>();
+
+        //Use hash as it is faster
         isRunningHash = Animator.StringToHash("isRunning");
         isGroundedHash = Animator.StringToHash("isGrounded");
+
+        inputManager = InputManager.Instance;
     }
 
-    // Update is called once per frame
     void Update()
     {
         bool isRunning = animator.GetBool(isRunningHash);
         bool isGrounded = animator.GetBool(isGroundedHash);
 
-        bool wPressed = Input.GetKey(KeyCode.W);
-        bool aPressed = Input.GetKey(KeyCode.A);
-        bool sPressed = Input.GetKey(KeyCode.S);
-        bool dPressed = Input.GetKey(KeyCode.D);
-        bool movementKeyPressed = wPressed || aPressed || sPressed || dPressed;
+        bool movementKeyPressed = inputManager.WASD.magnitude >= 0.1f;
 
-        //Movement
+        // play movement animation when any movement key is pressed
         if (!isRunning && movementKeyPressed)
         {
             animator.SetBool(isRunningHash, true);
             hologramAnimator.SetBool(isRunningHash, true);
         }
 
-        if(isRunning && !movementKeyPressed)
+        if (isRunning && !movementKeyPressed)
         {
             animator.SetBool(isRunningHash, false);
             hologramAnimator.SetBool(isRunningHash, false);
         }
 
-        //Jumping
+        // play jumping animation if player is not grounded
         if (groundCheck.isGrounded)
         {
             animator.SetBool(isGroundedHash, true);

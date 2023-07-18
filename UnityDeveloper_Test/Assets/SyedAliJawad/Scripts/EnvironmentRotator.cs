@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
 public class EnvironmentRotator : MonoBehaviour
 {
-    public Transform character;
     public Transform environment;
 
     public float rotationSpeed = 30f;
@@ -14,29 +14,35 @@ public class EnvironmentRotator : MonoBehaviour
     private float targetRotationAmount = 90f;
     private float currentRotationAmount = 0f;
     private Vector3 rotationAxis;
+    private InputManager inputManager;
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKeyDown(KeyCode.Return))
+        inputManager = InputManager.Instance;
+    }
+
+        // Update is called once per frame
+        void Update()
+    {
+        if (inputManager.LeftArrowKey && inputManager.Enter)
         {
             isRotatingEnvironment = true;
             rotationAxis = CalculateRotationAxis(-transform.right);
             currentRotationAmount = 0f;
         }
-        else if (Input.GetKey(KeyCode.RightArrow) && Input.GetKeyDown(KeyCode.Return))
+        else if (inputManager.RightArrowKey && inputManager.Enter)
         {
             isRotatingEnvironment = true;
             rotationAxis = CalculateRotationAxis(transform.right);
             currentRotationAmount = 0f;
         }
-        else if (Input.GetKey(KeyCode.UpArrow) && Input.GetKeyDown(KeyCode.Return))
+        else if (inputManager.UpArrowKey && inputManager.Enter)
         {
             isRotatingEnvironment = true;
             rotationAxis = CalculateRotationAxis(transform.forward);
             currentRotationAmount = 0f;
         }
-        else if (Input.GetKey(KeyCode.DownArrow) && Input.GetKeyDown(KeyCode.Return))
+        else if (inputManager.DownArrowKey && inputManager.Enter)
         {
             isRotatingEnvironment = true;
             rotationAxis = CalculateRotationAxis(-transform.forward);
@@ -45,7 +51,6 @@ public class EnvironmentRotator : MonoBehaviour
 
         if (isRotatingEnvironment)
         {
-            // Calculate the rotation amount for this frame
             float rotationThisFrame = rotationSpeed * Time.deltaTime;
 
             // Limit the rotation to avoid overshooting the target rotation
@@ -69,7 +74,7 @@ public class EnvironmentRotator : MonoBehaviour
         }
     }
 
-    // Calculate the rotation axis based on the dot product with the reference axis
+    // Calculate the rotation axis based on the player's axis
     private Vector3 CalculateRotationAxis(Vector3 referenceAxis)
     {
         if (Mathf.Abs(referenceAxis.x) > Mathf.Abs(referenceAxis.z))

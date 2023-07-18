@@ -1,48 +1,50 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class ThirdPersonMovement : MonoBehaviour
 {
-
     public Transform cam;
     public Rigidbody rb;
     public GroundCheck groundCheck;
 
-    //Variables
+    // Variables for player movement properties
     public float speed = 20f;
     public float jumpForce = 10f;
-    
-
     public float turnSmoothTime = 0.1f;
-    float turnSmoothVelocity;
+    private float turnSmoothVelocity;
 
     private Vector3 movementDirection;
+    private InputManager inputManager;
+
+    private void Start()
+    {
+        inputManager = InputManager.Instance;
+    }
 
     private void Update()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        movementDirection = new Vector3(horizontal, 0f, vertical).normalized;
+        //Get the movement direction from input manager and noramlize it
+        movementDirection = new Vector3(inputManager.WASD.x, 0f, inputManager.WASD.y).normalized;
 
         if (movementDirection.magnitude >= 0.1f)
         {
+            // Calculate the target angle for player rotation based on the camera's direction
             float targetAngle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+
+            // Smoothly rotate the player towards the target angle
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
         }
 
-        if (groundCheck.isGrounded && Input.GetKeyDown(KeyCode.Space))
+        // Jump if the player is on the ground and the Jump key is pressed
+        if (groundCheck.isGrounded && inputManager.Space)
         {
-            Debug.Log("Jump");
             rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
         }
     }
 
     private void FixedUpdate()
     {
-
+        //apply the movement to player
         if (movementDirection.magnitude >= 0.1f)
         {
             Vector3 moveDir = Quaternion.Euler(0f, cam.eulerAngles.y, 0f) * movementDirection;
